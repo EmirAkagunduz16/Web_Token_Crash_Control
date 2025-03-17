@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWT Token Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        pre {
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        .result {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>JWT Token Generator</h1>
+    
+    <div class="container">
+        <h2>Generate Token</h2>
+        <label for="username">Username:</label>
+        <input type="text" id="username" placeholder="Enter username">
+        <button onclick="generateToken()">Generate Token</button>
+        <div class="result">
+            <h3>Token:</h3>
+            <pre id="tokenResult">No token generated yet</pre>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2>Verify Token</h2>
+        <label for="token">Token:</label>
+        <input type="text" id="token" placeholder="Enter JWT token">
+        <button onclick="verifyToken()">Verify Token</button>
+        <div class="result">
+            <h3>Verification Result:</h3>
+            <pre id="verifyResult">No verification performed yet</pre>
+        </div>
+    </div>
+
+    <script>
+        // Store the last generated token
+        let lastToken = '';
+        
+        async function generateToken() {
+            const username = document.getElementById('username').value;
+            if (!username) {
+                alert('Please enter a username');
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:4567/token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username })
+                });
+                
+                const data = await response.json();
+                if (data.token) {
+                    lastToken = data.token;
+                    document.getElementById('tokenResult').textContent = data.token;
+                    document.getElementById('token').value = data.token;
+                } else {
+                    document.getElementById('tokenResult').textContent = 'Error: ' + JSON.stringify(data);
+                }
+            } catch (error) {
+                document.getElementById('tokenResult').textContent = 'Error: ' + error.message;
+            }
+        }
+        
+        async function verifyToken() {
+            const token = document.getElementById('token').value;
+            if (!token) {
+                alert('Please enter a token or generate one first');
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:4567/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ token })
+                });
+                
+                const data = await response.json();
+                document.getElementById('verifyResult').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('verifyResult').textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html> 
