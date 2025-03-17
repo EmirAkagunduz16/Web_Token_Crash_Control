@@ -14,9 +14,6 @@ A simple, elegant web application for generating and validating JSON Web Tokens 
 - 🚀 **REST API**: Simple endpoints for integration with other applications
 - 🔒 **Secure**: Uses cryptographically strong signing keys
 
-## Screenshots
-
-![Web Interface](https://via.placeholder.com/800x400?text=JWT+Web+Interface)
 
 ## Quick Start
 
